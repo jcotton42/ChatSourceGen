@@ -1,17 +1,22 @@
+using ChatPacketGenerator;
+
 namespace Chat;
 
-public readonly struct Hello
+[PacketGroup]
+public partial record ChatPacket
 {
-    public required string Name { get; init; }
-    public required string Password { get; init; }
-}
+    [PacketId(0)]
+    public sealed partial record Hello(string Name, string Password) : ChatPacket;
 
-public readonly struct Ping
-{
-    public required string Token { get; init; }
-}
+    [PacketId(1)]
+    public sealed partial record Ping(string Token) : ChatPacket;
 
-public readonly struct Pong
-{
-    public required string Token { get; init; }
+    [PacketId(2)]
+    public sealed partial record Pong(string Token) : ChatPacket;
+
+    [PacketId(3)]
+    public sealed partial record Message(string Text) : ChatPacket;
+
+    [PacketId(4)]
+    public sealed partial record Goodbye : ChatPacket;
 }

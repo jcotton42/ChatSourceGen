@@ -40,6 +40,7 @@ public sealed class Generator : IIncrementalGenerator
         var declarationSyntax = (RecordDeclarationSyntax)context.TargetNode;
         // TODO handle this being an error
         var groupSymbol = (INamedTypeSymbol)context.TargetSymbol;
+        groupSymbol.
 
         if (!TryGetNamespace(context.TargetNode, out var @namespace))
         {

@@ -1,7 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Diagnostics;
-using System.Linq;
 using System.Text;
 using System.Threading;
 
@@ -31,7 +28,7 @@ public sealed class Generator : IIncrementalGenerator
             .Where(result => result is not (null, null));
     }
 
-    private static (PacketGroupInfo?, EquatableArray<Diagnostic>?) GetPacketGroup(
+    private static (PacketGroupInfo? PacketGroup, EquatableArray<Diagnostic>? Diagnostics) GetPacketGroup(
         GeneratorAttributeSyntaxContext context,
         CancellationToken ct)
     {
@@ -96,6 +93,15 @@ public sealed class Generator : IIncrementalGenerator
 
             packets.Add(packet);
         }
+
+        var packetGroup = new PacketGroupInfo(
+            packetGroupSymbol.Name,
+            ns,
+            packetGroupSyntax.Modifiers.ToString(),
+            typeHierarchy,
+            packets.ToImmutable());
+
+        return (packetGroup, diagnostics.ToImmutable());
     }
 
     private static TypeHierarchyInfo? GetTypeHierarchy(TypeDeclarationSyntax syntax)
@@ -144,7 +150,10 @@ public sealed class Generator : IIncrementalGenerator
             ct.ThrowIfCancellationRequested();
             if (memberSymbol is not IPropertySymbol
                 {
-                    DeclaredAccessibility: Accessibility.Public or Accessibility.Internal,
+                    DeclaredAccessibility:
+                        Accessibility.Public
+                        or Accessibility.Internal
+                        or Accessibility.ProtectedOrInternal,
                     IsImplicitlyDeclared: false,
                 } propertySymbol)
             {
@@ -201,6 +210,14 @@ public sealed class Generator : IIncrementalGenerator
         }
 
         if (skipGeneration) return null;
+
+        if (implicitOrdering.Count == 0 && explicitOrdering.Count == 0)
+        {
+            return new PacketInfo(
+                typeSymbol.Name,
+                packetId,
+                PacketCreationType.EmptyConstructor);
+        }
 
         using var fields = ImmutableArrayBuilder<PacketFieldInfo>.Rent();
 
@@ -317,13 +334,31 @@ public sealed class Generator : IIncrementalGenerator
                 order,
                 PacketFieldType.OtherInteger,
                 OtherIntegerType: integerType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)),
+            INamedTypeSymbol
+                {
+                    TypeKind: TypeKind.Enum, EnumUnderlyingType.SpecialType: SpecialType.System_Byte
+                } enumType =>
+                new PacketFieldInfo(
+                    symbol.Name,
+                    order,
+                    PacketFieldType.EnumByte,
+                    EnumType: enumType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)),
+            INamedTypeSymbol
+                {
+                    TypeKind: TypeKind.Enum, EnumUnderlyingType.SpecialType: SpecialType.System_SByte
+                } enumType =>
+                new PacketFieldInfo(
+                    symbol.Name,
+                    order,
+                    PacketFieldType.EnumSByte,
+                    EnumType: enumType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)),
             INamedTypeSymbol { TypeKind: TypeKind.Enum, EnumUnderlyingType: var underlyingType } enumType =>
                 new PacketFieldInfo(
                     symbol.Name,
                     order,
-                    PacketFieldType.Enum,
+                    PacketFieldType.EnumOtherInteger,
                     EnumType: enumType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
-                    EnumUnderlyingType: underlyingType!.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)),
+                    EnumUnderlyingType: underlyingType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)),
             _ => null,
         };
 
@@ -353,12 +388,13 @@ internal sealed record PacketInfo(
     string Name,
     int Id,
     PacketCreationType CreationType,
-    EquatableArray<PacketFieldInfo> Fields);
+    EquatableArray<PacketFieldInfo>? Fields = null);
 
 internal enum PacketCreationType
 {
     ObjectInitializer,
     Constructor,
+    EmptyConstructor,
 }
 
 internal sealed record PacketFieldInfo(
@@ -375,5 +411,7 @@ internal enum PacketFieldType
     Byte,
     SByte,
     OtherInteger,
-    Enum,
+    EnumByte,
+    EnumSByte,
+    EnumOtherInteger,
 }

@@ -11,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "gen", "gen", "{EEB0D773-934
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatPacketGenerator", "gen\ChatPacketGenerator\ChatPacketGenerator.csproj", "{3E0AF767-8001-4FED-99CA-490D54720F30}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatPacketGenerator.Tests", "gen\ChatPacketGenerator.Tests\ChatPacketGenerator.Tests.csproj", "{1DA84897-F8E6-459F-9AB0-A7A5FD4A6539}"
+EndProject
 Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -48,9 +50,22 @@ Global
 		{3E0AF767-8001-4FED-99CA-490D54720F30}.Release|x64.Build.0 = Release|Any CPU
 		{3E0AF767-8001-4FED-99CA-490D54720F30}.Release|x86.ActiveCfg = Release|Any CPU
 		{3E0AF767-8001-4FED-99CA-490D54720F30}.Release|x86.Build.0 = Release|Any CPU
+		{1DA84897-F8E6-459F-9AB0-A7A5FD4A6539}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DA84897-F8E6-459F-9AB0-A7A5FD4A6539}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1DA84897-F8E6-459F-9AB0-A7A5FD4A6539}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1DA84897-F8E6-459F-9AB0-A7A5FD4A6539}.Debug|x64.Build.0 = Debug|Any CPU
+		{1DA84897-F8E6-459F-9AB0-A7A5FD4A6539}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1DA84897-F8E6-459F-9AB0-A7A5FD4A6539}.Debug|x86.Build.0 = Debug|Any CPU
+		{1DA84897-F8E6-459F-9AB0-A7A5FD4A6539}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1DA84897-F8E6-459F-9AB0-A7A5FD4A6539}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1DA84897-F8E6-459F-9AB0-A7A5FD4A6539}.Release|x64.ActiveCfg = Release|Any CPU
+		{1DA84897-F8E6-459F-9AB0-A7A5FD4A6539}.Release|x64.Build.0 = Release|Any CPU
+		{1DA84897-F8E6-459F-9AB0-A7A5FD4A6539}.Release|x86.ActiveCfg = Release|Any CPU
+		{1DA84897-F8E6-459F-9AB0-A7A5FD4A6539}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{49151B5E-4759-4C4B-A2A9-4BACEF49C04B} = {363E413D-C54D-4970-8EAD-0214580D5A90}
 		{3E0AF767-8001-4FED-99CA-490D54720F30} = {EEB0D773-934C-4B4E-8635-DFB0D9BD02F8}
+		{1DA84897-F8E6-459F-9AB0-A7A5FD4A6539} = {EEB0D773-934C-4B4E-8635-DFB0D9BD02F8}
 	EndGlobalSection
 EndGlobal

@@ -1,6 +1,4 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.InteropServices;
 
 namespace ChatPacketGenerator;
 
@@ -14,24 +12,30 @@ public static class SourceConstants
         """;
 
     public const string PacketGroupAttributeName = "ChatPacketGenerator.PacketGroupAttribute";
-    public const string PacketIdAttributeName = "ChatPacketGenerator.PacketIdAttribute";
+    public const string PacketAttributeName = "ChatPacketGenerator.PacketAttribute";
+    public const string PacketFieldAttributeName = "ChatPacketGenerator.PacketFieldAttribute";
 
     public const string Attributes = $$"""
         {{GeneratedHeader}}
 
-        using System;
-
-        namespace ChatPacketGenerator;
-
-        [AttributeUsage(AttributeTargets.Class)]
-        public sealed class PacketGroupAttribute : Attribute { }
-
-        [AttributeUsage(AttributeTargets.Class)]
-        public sealed class PacketIdAttribute : Attribute
+        namespace ChatPacketGenerator
         {
-            public int Id { get; }
+            using System;
 
-            public PacketIdAttribute(int id) => Id = id;
+            [AttributeUsage(AttributeTargets.Class)]
+            public sealed class PacketGroupAttribute : Attribute { }
+
+            [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
+            public sealed class PacketAttribute : Attribute
+            {
+                public required int Id { get; set; }
+            }
+
+            [AttributeUsage(AttributeTargets.Property | AttributeTargets.Parameter)]
+            public sealed class PacketFieldAttribute : Attribute
+            {
+                public int Order { get; init; }
+            }
         }
         """;
 

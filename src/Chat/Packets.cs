@@ -3,20 +3,20 @@ using ChatPacketGenerator;
 namespace Chat;
 
 [PacketGroup]
-public partial record ChatPacket
+public static class ChatPacket
 {
-    [PacketId(0)]
-    public sealed partial record Hello(string Name, string Password) : ChatPacket;
+    [Packet(Id = 0)]
+    public sealed record Hello(string Name, string Password);
 
-    [PacketId(1)]
-    public sealed partial record Ping(string Token) : ChatPacket;
+    [Packet(Id = 1)]
+    public sealed record Ping([property: PacketField] string Token);
 
-    [PacketId(2)]
-    public sealed partial record Pong(string Token) : ChatPacket;
+    [Packet(Id = 2)]
+    public sealed record Pong(string Token);
 
-    [PacketId(3)]
-    public sealed partial record Message(string Text) : ChatPacket;
+    [Packet(Id = 3)]
+    public sealed record Message(string Text);
 
-    [PacketId(4)]
-    public sealed partial record Goodbye : ChatPacket;
+    [Packet(Id = 4)]
+    public sealed record Goodbye;
 }

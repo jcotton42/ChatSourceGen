@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Text;
-using System.Threading;
+﻿using System.Text;
 
 using ChatPacketGenerator.Helpers;
 
@@ -8,7 +6,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 
-namespace ChatPacketGenerator;
+namespace ChatPacketGenerator.Generator;
 
 [Generator(LanguageNames.CSharp)]
 public sealed class Generator : IIncrementalGenerator
@@ -26,8 +24,6 @@ public sealed class Generator : IIncrementalGenerator
                 predicate: (node, _) => node is ClassDeclarationSyntax,
                 transform: Parser.GetPacketGroup)
             .Where(result => result is not (null, null));
-
-
     }
 }
 

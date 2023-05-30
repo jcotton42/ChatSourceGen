@@ -7,7 +7,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 
-namespace ChatPacketGenerator;
+namespace ChatPacketGenerator.Generator;
 
 internal static class Parser
 {

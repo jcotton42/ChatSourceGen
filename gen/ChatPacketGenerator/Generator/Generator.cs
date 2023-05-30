@@ -23,7 +23,22 @@ public sealed class Generator : IIncrementalGenerator
                 SourceConstants.PacketGroupAttributeName,
                 predicate: (node, _) => node is ClassDeclarationSyntax,
                 transform: Parser.GetPacketGroup)
-            .Where(result => result is not (null, null));
+            .Where(result => result is not null)
+            .Select((result, _) => result!.Value);
+
+        context.RegisterSourceOutput(parseResults, (context, parseResult) =>
+        {
+            var (packetGroup, diagnostics) = parseResult;
+            foreach (var diagnostic in diagnostics)
+            {
+                context.ReportDiagnostic(diagnostic);
+            }
+
+            if (!diagnostics.IsEmpty) return;
+
+            var source = Emitter.Emit(packetGroup, context.CancellationToken);
+            context.AddSource($"{packetGroup.Name}.g.cs", SourceText.From(source, Encoding.UTF8));
+        });
     }
 }
 
@@ -38,6 +53,7 @@ internal sealed record TypeHierarchyInfo(string Name, string Keyword, string Mod
 
 internal sealed record PacketInfo(
     string Name,
+    string FullyQualifiedName,
     int Id,
     PacketCreationType CreationType,
     EquatableArray<PacketFieldInfo>? Fields = null);

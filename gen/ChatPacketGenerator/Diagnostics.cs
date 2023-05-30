@@ -55,12 +55,10 @@ public static class Diagnostics
     public static DiagnosticDescriptor PacketHasWrongShape { get; } = new(
         id: "CPG1007",
         title: "Packet's constructor setup is invalid",
-        messageFormat: """
-            '{0}' must be one of:
-            - Reference or value type with one zero-param constructor (fields will be extracted from the properties)
-            - Reference type with one constructor (fields will be extracted from the constructor arguments)
-            - Value type with with one non-default constructor (fields will be extracted from the constructor arguments)
-            """,
+        messageFormat: "'{0}' must be one of: "
+                       + "- Reference or value type with one zero-param constructor (fields will be extracted from the properties) "
+                       + "- Reference type with one constructor (fields will be extracted from the constructor arguments) "
+                       + "- Value type with with one non-default constructor (fields will be extracted from the constructor arguments)",
         category: "Usage",
         DiagnosticSeverity.Error,
         isEnabledByDefault: true);

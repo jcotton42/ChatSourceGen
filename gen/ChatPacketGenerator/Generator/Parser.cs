@@ -11,16 +11,16 @@ namespace ChatPacketGenerator.Generator;
 
 internal static class Parser
 {
-    public static (PacketGroupInfo? PacketGroup, EquatableArray<Diagnostic>? Diagnostics) GetPacketGroup(
+    public static (PacketGroupInfo PacketGroup, EquatableArray<Diagnostic> Diagnostics)? GetPacketGroup(
         GeneratorAttributeSyntaxContext context,
         CancellationToken ct)
     {
         ct.ThrowIfCancellationRequested();
-        if (context.TargetSymbol is not INamedTypeSymbol packetGroupSymbol) return (null, null);
+        if (context.TargetSymbol is not INamedTypeSymbol packetGroupSymbol) return null;
         var packetGroupSyntax = (ClassDeclarationSyntax)context.TargetNode;
 
         var packetCandidates = packetGroupSymbol.GetTypeMembers();
-        if (packetCandidates.IsEmpty) return (null, null);
+        if (packetCandidates.IsEmpty) return null;
 
         var ns = packetGroupSymbol.ContainingNamespace?.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
         var typeHierarchy = GetTypeHierarchy(packetGroupSyntax);
@@ -47,19 +47,37 @@ internal static class Parser
                 continue;
             }
 
-            // TODO only look at public and internal constructors
-            var (packet, typeDoesNotMatch) = candidate switch
+            IMethodSymbol? zeroParamCtor = null;
+            IMethodSymbol? moreThanZeroParamCtor = null;
+            var ctorCount = 0;
+            foreach (var ctor in candidate.InstanceConstructors)
             {
-                { InstanceConstructors: [{ Parameters: [] }] } =>
-                    (GetPacketInfoFromProperties(candidate, packetId, diagnostics, ct), false),
-                { InstanceConstructors: [var ctor] } =>
-                    (GetPacketInfoFromConstructor(candidate.Name, ctor, packetId, diagnostics, ct), false),
-                { TypeKind: TypeKind.Struct, InstanceConstructors: [var ctor1, var ctor2] } =>
-                    ctor1.Parameters is not []
-                        ? (GetPacketInfoFromConstructor(candidate.Name, ctor1, packetId, diagnostics, ct), false)
-                        : (GetPacketInfoFromConstructor(candidate.Name, ctor2, packetId, diagnostics, ct), false),
-                _ => (null, true),
-            };
+                if (ctor is not
+                    {
+                        DeclaredAccessibility: Accessibility.Public
+                        or Accessibility.Internal
+                        or Accessibility.ProtectedOrInternal
+                    })
+                {
+                    continue;
+                }
+
+                if (ctor.Parameters is []) zeroParamCtor = ctor;
+                else moreThanZeroParamCtor = ctor;
+                ctorCount++;
+            }
+
+            var (packet, typeDoesNotMatch) =
+                (candidate.TypeKind, ctorCount, zeroParamCtor, moreThanZeroParamCtor) switch
+                {
+                    (_, 1, not null, null) => (
+                        GetPacketInfoFromProperties(candidate, packetId, diagnostics, ct),
+                        false),
+                    (_, 1, null, not null) or (TypeKind.Struct, 2, not null, not null) => (
+                        GetPacketInfoFromConstructor(candidate, moreThanZeroParamCtor, packetId, diagnostics, ct),
+                        false),
+                    _ => (null, true),
+                };
 
             if (packet is null)
             {
@@ -198,6 +216,7 @@ internal static class Parser
         {
             return new PacketInfo(
                 typeSymbol.Name,
+                typeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
                 packetId,
                 PacketCreationType.EmptyConstructor);
         }
@@ -221,13 +240,14 @@ internal static class Parser
 
         return new PacketInfo(
             typeSymbol.Name,
+            typeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
             packetId,
             PacketCreationType.ObjectInitializer,
             fields.ToImmutable());
     }
 
     private static PacketInfo? GetPacketInfoFromConstructor(
-        string name,
+        INamedTypeSymbol typeSymbol,
         IMethodSymbol ctor,
         int packetId,
         ImmutableArrayBuilder<Diagnostic> diagnostics,
@@ -274,7 +294,8 @@ internal static class Parser
         if (skipGeneration) return null;
 
         return new PacketInfo(
-            name,
+            typeSymbol.Name,
+            typeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
             packetId,
             PacketCreationType.Constructor,
             fields.ToImmutable());
@@ -341,7 +362,7 @@ internal static class Parser
                     order,
                     PacketFieldType.EnumOtherInteger,
                     EnumType: enumType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
-                    EnumUnderlyingType: underlyingType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)),
+                    EnumUnderlyingType: underlyingType!.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)),
             _ => null,
         };
 

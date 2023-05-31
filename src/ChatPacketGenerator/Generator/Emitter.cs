@@ -1,7 +1,12 @@
 using System;
+using System.Buffers;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
+
+using Microsoft.CodeAnalysis;
 
 namespace ChatPacketGenerator.Generator;
 
@@ -59,7 +64,7 @@ internal static class Emitter
 
         WriteTryRead(source, packet, ct);
         source.AppendLine();
-        WriteTryWrite(source, packet, ct);
+        WriteWrite(source, packet, ct);
     }
 
     private static void WriteTryRead(SourceBuilder source, PacketInfo packet, CancellationToken ct)
@@ -119,10 +124,22 @@ internal static class Emitter
         }
     }
 
-    private static void WriteTryWrite(SourceBuilder source, PacketInfo packet, CancellationToken ct)
+    private static void WriteWrite(SourceBuilder source, PacketInfo packet, CancellationToken ct)
     {
-        source.AppendLine($"// Write for {packet.FullyQualifiedName}");
+
     }
+
+    private static string GetBinaryPrimitivesMethod(SpecialType type) =>
+        type switch
+        {
+            SpecialType.System_UInt16 => "WriteUInt16LittleEndian",
+            SpecialType.System_Int16 => "WriteInt16LittleEndian",
+            SpecialType.System_UInt32 => "WriteUInt32LittleEndian",
+            SpecialType.System_Int32 => "WriteInt32LittleEndian",
+            SpecialType.System_UInt64 => "WriteUInt64LittleEndian",
+            SpecialType.System_Int64 => "WriteInt64LittleEndian",
+            _ => throw new ArgumentOutOfRangeException(nameof(type)),
+        };
 }
 
 file static class SourceBuilderTryReadExtensions
@@ -202,7 +219,7 @@ file static class SourceBuilderTryReadExtensions
         string name)
     {
         source.AppendLine($"Unsafe.SkipInit(out {enumType} __{name});");
-        source.AppendLine($"if (!reader.TryReadLittleEndian(out Unsafe.As<{enumType}, {enumUnderlyingType}>(ref __{name}))) return false");
+        source.AppendLine($"if (!reader.TryReadLittleEndian(out Unsafe.As<{enumType}, {enumUnderlyingType}>(ref __{name}))) return false;");
         return source;
     }
 
@@ -248,4 +265,36 @@ file static class SourceBuilderTryReadExtensions
         source.EndBlock();
         return source;
     }
+}
+
+file static class SourceBuilderWriteExtensions
+{
+    // TODO also have one for empty packet (might not be needed here though?)
+    public static SourceBuilder AppendWriteStart(this SourceBuilder source, string type, int id)
+    {
+        source.AppendLine($"file static void Write(IBufferWriter<byte> writer, {type} value)");
+        source.StartBlock();
+        source.AppendLine($"const int id = {id};");
+        source.EndBlock();
+        return source;
+    }
+    /*
+    public static void Write(IBufferWriter<byte> writer, T value)
+    {
+        const int id = 3;
+        var length = sizeof(data) + sizeof(id_type);
+        var offset = 0;
+        var buffer = writer.GetSpan(length);
+
+        BinaryPrimitives.WriteInt32LittleEndian(buffer[offset..], id);
+        offset += sizeof(int);
+
+        string s = "abcd";
+        BinaryPrimitives.WriteUInt16LittleEndian(buffer[offset..], checked((ushort)Encoding.UTF8.GetByteCount(s)));
+        offset += sizeof(ushort);
+
+        offset += Encoding.UTF8.GetBytes(s, buffer[offset..]);
+        writer.Advance(offset);
+    }
+    */
 }

@@ -1,3 +1,6 @@
+using System.Buffers.Binary;
+using System.Runtime.CompilerServices;
+
 using ChatPacketGenerator;
 
 namespace Chat;

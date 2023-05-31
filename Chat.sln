@@ -7,11 +7,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{363E413D-C54
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chat", "src\Chat\Chat.csproj", "{49151B5E-4759-4C4B-A2A9-4BACEF49C04B}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "gen", "gen", "{EEB0D773-934C-4B4E-8635-DFB0D9BD02F8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatPacketGenerator", "src\ChatPacketGenerator\ChatPacketGenerator.csproj", "{3E0AF767-8001-4FED-99CA-490D54720F30}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatPacketGenerator", "gen\ChatPacketGenerator\ChatPacketGenerator.csproj", "{3E0AF767-8001-4FED-99CA-490D54720F30}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatPacketGenerator.Tests", "test\ChatPacketGenerator.Tests\ChatPacketGenerator.Tests.csproj", "{1DA84897-F8E6-459F-9AB0-A7A5FD4A6539}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatPacketGenerator.Tests", "gen\ChatPacketGenerator.Tests\ChatPacketGenerator.Tests.csproj", "{1DA84897-F8E6-459F-9AB0-A7A5FD4A6539}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{C9F08CB0-BCF7-4780-8702-118689D44CF2}"
 EndProject
 Global
 	GlobalSection(SolutionProperties) = preSolution
@@ -65,7 +65,7 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{49151B5E-4759-4C4B-A2A9-4BACEF49C04B} = {363E413D-C54D-4970-8EAD-0214580D5A90}
-		{3E0AF767-8001-4FED-99CA-490D54720F30} = {EEB0D773-934C-4B4E-8635-DFB0D9BD02F8}
-		{1DA84897-F8E6-459F-9AB0-A7A5FD4A6539} = {EEB0D773-934C-4B4E-8635-DFB0D9BD02F8}
+		{3E0AF767-8001-4FED-99CA-490D54720F30} = {363E413D-C54D-4970-8EAD-0214580D5A90}
+		{1DA84897-F8E6-459F-9AB0-A7A5FD4A6539} = {C9F08CB0-BCF7-4780-8702-118689D44CF2}
 	EndGlobalSection
 EndGlobal

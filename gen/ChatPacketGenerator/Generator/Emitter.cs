@@ -24,6 +24,7 @@ internal static class Emitter
         WritePacketGroup(source, packetGroup, ct);
 
         source.EndAllBlocks();
+        source.AppendLine(SourceConstants.ParserExtensions);
         return source.ToString();
     }
 
@@ -120,7 +121,7 @@ internal static class Emitter
 
     private static void WriteTryWrite(SourceBuilder source, PacketInfo packet, CancellationToken ct)
     {
-        source.AppendLine($"Write for {packet.FullyQualifiedName}");
+        source.AppendLine($"// Write for {packet.FullyQualifiedName}");
     }
 }
 
@@ -164,8 +165,7 @@ file static class SourceBuilderTryReadExtensions
 
     public static SourceBuilder AppendTryReadSByte(this SourceBuilder source, string name)
     {
-        source.AppendLine($"if (!reader.TryRead(out byte __{name}_byte) return false;");
-        source.AppendLine($"sbyte __{name} = unchecked((sbyte)__{name}_byte);");
+        source.AppendLine($"if (!reader.TryRead(out sbyte __{name}) return false;");
         return source;
     }
 
@@ -180,8 +180,8 @@ file static class SourceBuilderTryReadExtensions
         string enumType,
         string name)
     {
-        source.AppendTryReadByte($"{name}_value");
-        source.AppendLine($"{enumType} __{name} = unchecked(({enumType})__{name}_value);");
+        source.AppendLine($"Unsafe.SkipInit(out {enumType} __{name});");
+        source.AppendLine($"if (!reader.TryReadLittleEndian(out Unsafe.As<{enumType}, byte>(ref __{name}))) return false");
         return source;
     }
 
@@ -190,8 +190,8 @@ file static class SourceBuilderTryReadExtensions
         string enumType,
         string name)
     {
-        source.AppendTryReadSByte($"{name}_value");
-        source.AppendLine($"{enumType} __{name} = unchecked(({enumType})__{name}_value);");
+        source.AppendLine($"Unsafe.SkipInit(out {enumType} __{name});");
+        source.AppendLine($"if (!reader.TryReadLittleEndian(out Unsafe.As<{enumType}, sbyte>(ref __{name}))) return false");
         return source;
     }
 
@@ -201,8 +201,8 @@ file static class SourceBuilderTryReadExtensions
         string enumUnderlyingType,
         string name)
     {
-        source.AppendTryReadOtherInteger(enumUnderlyingType, $"{name}_value");
-        source.AppendLine($"{enumType} __{name} = unchecked(({enumType})__{name}_value);");
+        source.AppendLine($"Unsafe.SkipInit(out {enumType} __{name});");
+        source.AppendLine($"if (!reader.TryReadLittleEndian(out Unsafe.As<{enumType}, {enumUnderlyingType}>(ref __{name}))) return false");
         return source;
     }
 

@@ -1,9 +1,10 @@
+
 using ChatPacketGenerator;
 
 namespace Chat;
 
 [PacketGroup]
-public static class ChatPacket
+public static partial class ChatPacket
 {
     [Packet(Id = 0)]
     public sealed record Hello(string Name, string Password);

@@ -22,8 +22,7 @@ internal static class Parser
         var packetCandidates = packetGroupSymbol.GetTypeMembers();
         if (packetCandidates.IsEmpty) return null;
 
-        var ns = packetGroupSymbol.ContainingNamespace?.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
-        var typeHierarchy = GetTypeHierarchy(packetGroupSyntax);
+        var (typeHierarchy, ns) = GetTypeHierarchyAndNamespace(packetGroupSyntax);
 
         using var packets = ImmutableArrayBuilder<PacketInfo>.Rent();
         using var diagnostics = ImmutableArrayBuilder<Diagnostic>.Rent();
@@ -105,31 +104,43 @@ internal static class Parser
         return (packetGroup, diagnostics.ToImmutable());
     }
 
-    private static TypeHierarchyInfo? GetTypeHierarchy(TypeDeclarationSyntax syntax)
+    private static (TypeHierarchyInfo?, string?) GetTypeHierarchyAndNamespace(TypeDeclarationSyntax syntax)
     {
         TypeHierarchyInfo? hierarchy = null;
+        var namespaceParts = new Stack<string>();
         var parent = syntax.Parent;
-        while (parent is TypeDeclarationSyntax typeSyntax)
+        while (parent is not null)
         {
-            hierarchy = typeSyntax switch
+            switch (parent)
             {
-                RecordDeclarationSyntax { ClassOrStructKeyword.Span.IsEmpty: false } recordSyntax => new
-                    TypeHierarchyInfo(
+                case RecordDeclarationSyntax { ClassOrStructKeyword.Span.IsEmpty: false } recordSyntax:
+                    hierarchy = new TypeHierarchyInfo(
                         recordSyntax.Identifier.ToString(),
                         $"{recordSyntax.Keyword} {recordSyntax.ClassOrStructKeyword}",
                         recordSyntax.Modifiers.ToString(),
-                        hierarchy),
-                _ => new TypeHierarchyInfo(
-                    typeSyntax.Identifier.ToString(),
-                    typeSyntax.Keyword.ToString(),
-                    typeSyntax.Modifiers.ToString(),
-                    hierarchy),
-            };
+                        hierarchy);
+                    break;
+                 case TypeDeclarationSyntax typeSyntax:
+                     hierarchy = new TypeHierarchyInfo(
+                         typeSyntax.Identifier.ToString(),
+                         typeSyntax.Keyword.ToString(),
+                         typeSyntax.Modifiers.ToString(),
+                         hierarchy);
+                     break;
+                 case BaseNamespaceDeclarationSyntax namespaceSyntax:
+                     namespaceParts.Push(namespaceSyntax.Name.ToString());
+                     break;
+            }
 
             parent = parent.Parent;
         }
 
-        return hierarchy;
+        if (namespaceParts.Count == 0)
+        {
+            return (hierarchy, null);
+        }
+
+        return (hierarchy, string.Join(".", namespaceParts));
     }
 
     private static PacketInfo? GetPacketInfoFromProperties(

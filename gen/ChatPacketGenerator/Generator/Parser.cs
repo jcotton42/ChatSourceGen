@@ -162,11 +162,11 @@ internal static class Parser
             ct.ThrowIfCancellationRequested();
             if (memberSymbol is not IPropertySymbol
                 {
-                    DeclaredAccessibility:
+                    IsImplicitlyDeclared: false,
+                    SetMethod.DeclaredAccessibility:
                     Accessibility.Public
                     or Accessibility.Internal
-                    or Accessibility.ProtectedOrInternal,
-                    IsImplicitlyDeclared: false,
+                    or Accessibility.ProtectedOrInternal
                 } propertySymbol)
             {
                 continue;

@@ -244,6 +244,7 @@ file static class SourceBuilderTryReadExtensions
         }
 
         source.EndBlock(addSemicolon: true);
+        source.AppendLine("return true;");
         source.EndBlock();
         return source;
     }

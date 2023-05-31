@@ -1,4 +1,3 @@
-
 using ChatPacketGenerator;
 
 namespace Chat;
@@ -10,7 +9,7 @@ public static partial class ChatPacket
     public sealed record Hello(string Name, string Password);
 
     [Packet(Id = 1)]
-    public sealed record Ping([property: PacketField] string Token);
+    public sealed record Ping(string Token);
 
     [Packet(Id = 2)]
     public sealed record Pong(string Token);
@@ -19,5 +18,16 @@ public static partial class ChatPacket
     public sealed record Message(string Text);
 
     [Packet(Id = 4)]
-    public sealed record Goodbye;
+    public sealed record Goodbye
+    {
+        public string Foo { get; init; }
+        public MyEnum State { get; init; }
+    }
+}
+
+public enum MyEnum
+{
+    A,
+    B,
+    C,
 }

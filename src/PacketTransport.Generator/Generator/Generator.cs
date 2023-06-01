@@ -1,23 +1,18 @@
 ﻿using System.Text;
 
-using ChatPacketGenerator.Helpers;
-
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 
-namespace ChatPacketGenerator.Generator;
+using PacketTransport.Generator.Helpers;
+
+namespace PacketTransport.Generator.Generator;
 
 [Generator(LanguageNames.CSharp)]
 public sealed class Generator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        context.RegisterPostInitializationOutput(context =>
-        {
-            context.AddSource("Attributes.g.cs", SourceText.From(SourceConstants.Attributes, Encoding.UTF8));
-        });
-
         var parseResults = context.SyntaxProvider
             .ForAttributeWithMetadataName(
                 SourceConstants.PacketGroupAttributeName,

@@ -30,7 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\ChatPacketGenerator\ChatPacketGenerator.csproj" />
+    <ProjectReference Include="..\..\src\PacketTransport.Generator\PacketTransport.Generator.csproj" />
   </ItemGroup>
 
 </Project>

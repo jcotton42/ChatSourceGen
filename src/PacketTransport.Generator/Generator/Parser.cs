@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using System.Threading;
 
-using ChatPacketGenerator.Helpers;
-
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 
-namespace ChatPacketGenerator.Generator;
+using PacketTransport.Generator.Helpers;
+
+namespace PacketTransport.Generator.Generator;
 
 internal static class Parser
 {
@@ -66,6 +66,8 @@ internal static class Parser
                 ctorCount++;
             }
 
+            // TODO only allow record primary ctors to be used as the constructor
+            // "from memory, its if the DeclaringSyntaxReference is a RecordDeclarationSyntax"
             var (packet, typeDoesNotMatch) =
                 (candidate.TypeKind, ctorCount, zeroParamCtor, moreThanZeroParamCtor) switch
                 {

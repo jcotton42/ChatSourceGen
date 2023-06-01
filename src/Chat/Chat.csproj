@@ -10,10 +10,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference 
-      Include="..\ChatPacketGenerator\ChatPacketGenerator.csproj"
-      OutputItemType="Analyzer"
-      ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\PacketTransport\PacketTransport.csproj"  />
+    <ProjectReference Include="..\PacketTransport.Generator\PacketTransport.Generator.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false" />
   </ItemGroup>
 
 </Project>

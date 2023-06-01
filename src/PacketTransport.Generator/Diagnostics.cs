@@ -1,6 +1,6 @@
 using Microsoft.CodeAnalysis;
 
-namespace ChatPacketGenerator;
+namespace PacketTransport.Generator;
 
 public static class Diagnostics
 {

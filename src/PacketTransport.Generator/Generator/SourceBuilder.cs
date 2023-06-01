@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace ChatPacketGenerator.Generator;
+namespace PacketTransport.Generator.Generator;
 
 public sealed class SourceBuilder
 {

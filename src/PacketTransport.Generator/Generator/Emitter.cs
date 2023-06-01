@@ -1,14 +1,11 @@
 using System;
-using System.Buffers;
-using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 
 using Microsoft.CodeAnalysis;
 
-namespace ChatPacketGenerator.Generator;
+namespace PacketTransport.Generator.Generator;
 
 internal static class Emitter
 {
@@ -29,7 +26,6 @@ internal static class Emitter
         WritePacketGroup(source, packetGroup, ct);
 
         source.EndAllBlocks();
-        source.AppendLine(SourceConstants.ParserExtensions);
         return source.ToString();
     }
 

@@ -1,4 +1,6 @@
-using Verify = ChatPacketGenerator.Tests.Verifiers.CSharpAnalyzerVerifier<ChatPacketGenerator.Analyzer>;
+using PacketTransport.Generator;
+
+using Verify = ChatPacketGenerator.Tests.Verifiers.CSharpAnalyzerVerifier<PacketTransport.Generator.Analyzer>;
 
 namespace ChatPacketGenerator.Tests;
 
@@ -8,7 +10,7 @@ public class UnitTest1
     public async Task PacketFieldsMustBeInAPacket()
     {
         var code = $$"""
-            using ChatPacketGenerator;
+            using PacketTransport.Generator;
             [PacketGroup]
             public static class ChatPacket
             {

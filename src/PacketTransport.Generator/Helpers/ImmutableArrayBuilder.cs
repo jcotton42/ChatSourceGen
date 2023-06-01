@@ -13,7 +13,7 @@ using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
-namespace ChatPacketGenerator.Helpers;
+namespace PacketTransport.Generator.Helpers;
 
 /// <summary>
 /// A helper type to build sequences of values with pooled buffers.

@@ -12,7 +12,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
-namespace ChatPacketGenerator.Helpers;
+namespace PacketTransport.Generator.Helpers;
 
 /// <summary>
 /// Extensions for <see cref="EquatableArray{T}"/>.
